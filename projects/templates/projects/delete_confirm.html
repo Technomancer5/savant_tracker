@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete {{ project.name }}</title>
+</head>
+<body style="background-color: #361010; color: #FFF500; font-family: sans-serif; padding: 20px;">
+
+    <h1 style="color: #FF3333;">⚠️ Delete Project</h1>
+    <hr style="border-color: #FFCC00;">
+
+    <p style="font-size: 18px;">
+        Are you absolutely sure you want to delete the project: <strong>{{ project.name }}</strong>? 
+        <br><span style="color: #93B7BE; font-size: 14px;">This action cannot be undone.</span>
+    </p>
+
+    <!-- The form that triggers the actual database deletion -->
+    <form method="POST" style="margin-top: 20px;">
+        {% csrf_token %}
+        
+        <!-- Bright Red Delete Confirmation Button -->
+        <button type="submit" style="background-color: #FF3333; color: white; font-weight: bold; padding: 10px 20px; border: none; cursor: pointer;">
+            Yes, Delete Permanently
+        </button>
+        
+        <!-- Cancel link to run away safely back to the project page -->
+        <a href="{% url 'project_detail' project.id %}" style="color: #33CCFF; margin-left: 20px; text-decoration: none;">
+            Cancel and Keep It
+        </a>
+    </form>
+
+</body>
+</html>

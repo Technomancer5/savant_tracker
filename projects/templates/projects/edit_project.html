@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit {{ project.name }}</title>
+</head>
+<body style="background-color: #361010; color: #FFF500; font-family: sans-serif; padding: 20px;">
+
+    <h1 style="color: #00FFCC; margin-bottom: 5px;">Edit Project: {{ project.name }}</h1>
+    <p style="color: #93B7BE; margin-top: 0;">Update your spreadsheet tracking details below.</p>
+    <hr style="border-color: #FFCC00; margin-bottom: 25px;">
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- CSS Grid Wrapper: Splits the screen into two equal columns -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; color: #A3FF12;">
+            
+            <!-- Left Column: Core Metadata -->
+            <div style="background-color: #4A1515; padding: 15px; border-radius: 5px;">
+                <h3 style="color: #33CCFF; margin-top: 0; border-bottom: 1px solid #FFCC00; padding-bottom: 5px;">Core Details</h3>
+                <p><strong>Project Name:</strong><br> {{ form.name }}</p>
+                <p><strong>Category:</strong><br> {{ form.category }}</p>
+                <p><strong>Type:</strong><br> {{ form.project_type }}</p>
+                <p><strong>Priority:</strong><br> {{ form.priority }}</p>
+                <p><strong>Status:</strong><br> {{ form.status }}</p>
+                <p><strong>Last Updated:</strong><br> {{ form.last_updated }}</p>
+                <p><strong>Tags:</strong><br> {{ form.tags }}</p>
+            </div>
+
+            <!-- Right Column: Notes & AI Tool Links -->
+            <div style="background-color: #4A1515; padding: 15px; border-radius: 5px;">
+                <h3 style="color: #33CCFF; margin-top: 0; border-bottom: 1px solid #FFCC00; padding-bottom: 5px;">Resources & Context</h3>
+                <p><strong>AI Source:</strong><br> {{ form.ai_source }}</p>
+                <p><strong>AI Prompt Link:</strong><br> {{ form.ai_prompt_link }}</p>
+                <p><strong>Related Websites:</strong><br> {{ form.related_websites }}</p>
+                <p><strong>Summary:</strong><br> {{ form.summary }}</p>
+                <p><strong>Main File / Notes Links:</strong><br> {{ form.links }}</p>
+            </div>
+
+        </div>
+
+        <!-- Form Actions Footer -->
+        <div style="margin-top: 30px; border-top: 1px solid #FFCC00; padding-top: 20px;">
+            <button type="submit" style="background-color: #00FFCC; color: #361010; font-weight: bold; padding: 12px 25px; border: none; font-size: 16px; cursor: pointer; border-radius: 3px;">
+                💾 Save Changes
+            </button>
+            <a href="{% url 'project_detail' project.id %}" style="color: #33CCFF; margin-left: 20px; text-decoration: none; font-size: 16px;">
+                Cancel
+            </a>
+        </div>
+    </form>
+
+</body>
+</html>
