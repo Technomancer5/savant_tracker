@@ -10,6 +10,33 @@ def dashboard(request):
     all_projects = Project.objects.all()
     return render(request, 'projects/dashboard.html', {'projects': all_projects})
 
+def create_project(request):
+    if request.method == "POST":
+        form = ProjectForm(request.POST)
+
+        if form.is_valid():
+            project = form.save(commit=False)
+
+            if not project.last_updated:
+                project.last_updated = datetime.now().date()
+
+            project.save()
+
+            messages.success(
+                request,
+                f"Project '{project.name}' created successfully!",
+            )
+
+            return redirect("project_detail", pk=project.pk)
+    else:
+        form = ProjectForm()
+
+    return render(
+        request,
+        "projects/create_project.html",
+        {"form": form},
+    )
+
 def upload_csv(request):
     if request.method == "POST" and request.FILES.get('csv_file'):
         uploaded_file = request.FILES['csv_file']
@@ -116,47 +143,67 @@ def export_csv(request):
     return response
 
 def project_detail(request, pk):
-    # Fetch the exact project using its ID, or show a 404 error page if it doesn't exist
     project = get_object_or_404(Project, pk=pk)
-    
-    # Send that project data to HTML template
-    return render(request, 'projects/project_detail.html', {'project': project})
-    
+
     if request.method == "POST":
-        if 'update_project' in request.POST:
-            project.status = request.POST.get('status', '').strip()
-            project.priority = request.POST.get('priority', '').strip()
-            project.summary = request.POST.get('summary', '').strip()
-            project.links = request.POST.get('links', '').strip()
-            
-            # Save entries from the new editing fields
-            project.ai_source = request.POST.get('ai_source', '').strip()
-            project.ai_prompt_link = request.POST.get('ai_prompt_link', '').strip()
-            project.related_websites = request.POST.get('related_websites', '').strip()
-            
-            project.tags = request.POST.get('tags', '').strip()
+        if "update_project" in request.POST:
+            project.status = request.POST.get("status", "").strip()
+            project.priority = request.POST.get("priority", "").strip()
+            project.summary = request.POST.get("summary", "").strip()
+            project.links = request.POST.get("links", "").strip()
+
+            project.ai_source = request.POST.get("ai_source", "").strip()
+            project.ai_prompt_link = request.POST.get(
+                "ai_prompt_link",
+                "",
+            ).strip()
+            project.related_websites = request.POST.get(
+                "related_websites",
+                "",
+            ).strip()
+
+            project.tags = request.POST.get("tags", "").strip()
             project.last_updated = datetime.now().date()
             project.save()
-            messages.success(request, f"Changes to '{project.name}' saved successfully!")
-            
-        elif 'add_log' in request.POST:
+
+            messages.success(
+                request,
+                f"Changes to '{project.name}' saved successfully!",
+            )
+
+        elif "add_log" in request.POST:
             from .models import StudyLog
-            duration = request.POST.get('duration_minutes', 0)
-            notes = request.POST.get('notes', '').strip()
+
+            duration = request.POST.get("duration_minutes", "").strip()
+            notes = request.POST.get("notes", "").strip()
+
             if duration and notes:
                 StudyLog.objects.create(
                     project=project,
                     duration_minutes=int(duration),
-                    notes=notes
+                    notes=notes,
                 )
+
                 project.last_updated = datetime.now().date()
                 project.save()
-                messages.success(request, "Study session logged successfully!")
-                
-        return redirect('project_detail', project_id=project.id)
 
-    logs = project.logs.all().order_by('-date_logged')
-    return render(request, 'projects/project_detail.html', {'project': project, 'logs': logs})
+                messages.success(
+                    request,
+                    "Study session logged successfully!",
+                )
+
+        return redirect("project_detail", pk=project.pk)
+
+    logs = project.logs.all().order_by("-date_logged")
+
+    return render(
+        request,
+        "projects/project_detail.html",
+        {
+            "project": project,
+            "logs": logs,
+        },
+    )
 
 def edit_project(request, pk):
     # 1. Fetch the specific project using its unique ID (pk)
